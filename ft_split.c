@@ -1,5 +1,14 @@
 #include "libft.h"
 
+static void	free_all(char **list, int j)
+{
+	while (j >= 0)
+	{
+		free(list[j]);
+		j--;
+	}
+}
+
 static int	count_words(char const *s, char c)
 {
 	int	word_count;
@@ -55,7 +64,10 @@ static char	**split(char **list, char const *s, char c, int wc)
 			len = word_len(s + i, c);
 			list[j] = malloc(sizeof(char) * (len + 1));
 			if (!list[j])
+			{
+				free_all(list, j);
 				return (NULL);
+			}
 			ft_strlcpy(list[j], s + i, len + 1);
 			j++;
 		}
@@ -70,6 +82,7 @@ char	**ft_split(char const *s, char c)
 {
 	int	word_count;
 	char	**list;
+	char	**res;
 
 	if (!s)
 		return (NULL);
@@ -77,5 +90,11 @@ char	**ft_split(char const *s, char c)
 	list = malloc(sizeof(char*) * (word_count + 1));
 	if (!list)
 		return (NULL);
-	return (split(list, s, c, word_count));
+	res = (split(list, s, c, word_count));
+	if (!res)
+	{
+		free(list);
+		return (NULL);
+	}
+	return (res);
 }
